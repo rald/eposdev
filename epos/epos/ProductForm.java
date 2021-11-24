@@ -27,6 +27,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.SwingUtilities;
 import java.io.File;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+
+
 class ProductForm extends JFrame {
 
     JPanel      pnlSearch = new JPanel();
@@ -39,6 +47,10 @@ class ProductForm extends JFrame {
     JButton     btnEdit = new JButton();
     JButton     btnRemove = new JButton();
     JButton     btnCancel = new JButton();
+
+    JList       lstProduct = new JList();
+
+
 
     ProductForm() {
         createGui();
@@ -88,9 +100,17 @@ class ProductForm extends JFrame {
 
         pnlOperations.setBorder(new EmptyBorder(8,8,8,8));
 
+
+
+/*
+        ListBoxRenderer renderer= new ListBoxRenderer();
+        renderer.setPreferredSize(new Dimension(200, 130));
+        lstProduct.setRenderer(renderer);
+*/
+
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                searchProductForm();
+                searchProduct(txtSearch.getText());
             }
         });
 
@@ -125,10 +145,6 @@ class ProductForm extends JFrame {
     }
 
 
-    void searchProductForm() {
-        JOptionPane.showMessageDialog(MainForm.productForm,"Search Product","Message",JOptionPane.PLAIN_MESSAGE);
-    }
-
     void addProductForm() {
         MainForm.productForm.setVisible(false);
         MainForm.addProductForm.setVisible(true);
@@ -141,5 +157,42 @@ class ProductForm extends JFrame {
     void removeProductForm() {
         JOptionPane.showMessageDialog(MainForm.productForm,"Remove Product","Message",JOptionPane.PLAIN_MESSAGE);
     }
+
+    void searchProduct(String searchText) {
+
+        System.out.printf("Search: %s\n",searchText);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
+
+            String sql = "SELECT ID,PRODUCT_NAME,PRODUCT_PRICE,PRODUCT_QUANTITY,? AS SEARCH_TEXT FROM PRODUCT WHERE ID LIKE SEARCH_TEXT OR PRODUCT_NAME LIKE SEARCH_TEXT OR PRODUCT_PRICE LIKE SEARCH_TEXT OR PRODUCT_QUANTITY LIKE SEARCH_TEXT;";
+            pstmt=conn.prepareStatement(sql);
+            pstmt.setString(1,searchText);
+            rs=pstmt.executeQuery();
+
+            while(rs.next()) {
+                int id=rs.getInt("ID");
+                String name=rs.getString("PRODUCT_NAME");
+                int price=rs.getInt("PRODUCT_PRICE");
+                int quantity=rs.getInt("PRODUCT_QUANTITY");
+
+                System.out.printf("%04d %32s %.2f %4d\n",id,name,price/1000.0,quantity);
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch ( Exception ex ) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(MainForm.productForm,ex.getClass().getName()+": "+ex.getMessage(),"Message",JOptionPane.PLAIN_MESSAGE);
+        }
+
+    }
+
 
 }
