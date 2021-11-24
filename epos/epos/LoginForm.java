@@ -39,7 +39,7 @@ class LoginForm extends JFrame {
 
         setTitle("EPOS - Login");
 
-        setSize(390,260);
+        setSize(408,184);
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,62 +50,16 @@ class LoginForm extends JFrame {
         btnOK.setText("OK");
         btnRegister.setText("Register");
 
-        lblUsername.setBounds(20,20,80,30);
-        lblPassword.setBounds(20,70,80,30);
-        txtUsername.setBounds(120,20,240,30);
-        txtPassword.setBounds(120,70,240,30);
-        btnOK.setBounds(20,120,340,30);
-        btnRegister.setBounds(20,170,340,30);
+        lblUsername.setBounds(16,16,96,32);
+        lblPassword.setBounds(16,64,96,32);
+        txtUsername.setBounds(128,16,256,32);
+        txtPassword.setBounds(128,64,256,32);
+        btnRegister.setBounds(16,112,128,32);
+        btnOK.setBounds(256,112,128,32);
 
         btnOK.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
-                String username=txtUsername.getText();
-                String password=MD5.getMd5(new String(txtPassword.getPassword()));
-                boolean valid=false;
-
-                Connection conn = null;
-                PreparedStatement pstmt = null;
-                ResultSet rs = null;
-
-                try {
-                    Class.forName("org.sqlite.JDBC");
-                    conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.db_path);
-
-                    String sql = "SELECT ID,USER_NAME,USER_PASS FROM USER WHERE USER_NAME=? AND USER_PASS=?;";
-                    pstmt = conn.prepareStatement(sql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-                    pstmt.setString(1,username);
-                    pstmt.setString(2,password);
-                    rs=pstmt.executeQuery();
-
-                    if(rs.next()) {
-                        MainForm.user_id=rs.getInt("ID");
-                        MainForm.user_name=rs.getString("USER_NAME");
-                        MainForm.mainForm.setTitle("EPOS - Welcome "+MainForm.user_name);
-                        valid=true;
-                    }
-
-                    rs.close();
-                    pstmt.close();
-                    conn.close();
-                } catch ( Exception ex ) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(MainForm.registerForm,ex.getClass().getName() + ": " + ex.getMessage(),"Register Message",JOptionPane.PLAIN_MESSAGE);
-                }
-
-
-                if(valid) {
-                    JOptionPane.showMessageDialog(MainForm.loginForm,"Access Granted","Login Message",JOptionPane.PLAIN_MESSAGE);
-                    MainForm.loginForm.setVisible(false);
-                    MainForm.mainForm.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(MainForm.loginForm,"Access Denied","Login Message",JOptionPane.PLAIN_MESSAGE);
-                }
-
-
-                txtUsername.setText("");
-                txtPassword.setText("");
-
-
+                login(ae);
             }
         });
 
@@ -122,6 +76,56 @@ class LoginForm extends JFrame {
         add(txtPassword);
         add(btnOK);
         add(btnRegister);
+    }
+
+    void login(ActionEvent ae) {
+
+        String username=txtUsername.getText();
+        String password=MD5.getMd5(new String(txtPassword.getPassword()));
+        boolean valid=false;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
+
+            String sql = "SELECT ID,USER_NAME,USER_PASS FROM USER WHERE USER_NAME=? AND USER_PASS=?;";
+            pstmt = conn.prepareStatement(sql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            pstmt.setString(1,username);
+            pstmt.setString(2,password);
+            rs=pstmt.executeQuery();
+
+            if(rs.next()) {
+                MainForm.userId=rs.getInt("ID");
+                MainForm.userName=rs.getString("USER_NAME");
+                MainForm.mainForm.setTitle("EPOS - Welcome "+MainForm.userName);
+                valid=true;
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch ( Exception ex ) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(MainForm.registerForm,ex.getClass().getName() + ": " + ex.getMessage(),"Register Message",JOptionPane.PLAIN_MESSAGE);
+        }
+
+
+        if(valid) {
+            JOptionPane.showMessageDialog(MainForm.loginForm,"Access Granted","Login Message",JOptionPane.PLAIN_MESSAGE);
+            MainForm.loginForm.setVisible(false);
+            MainForm.mainForm.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(MainForm.loginForm,"Access Denied","Login Message",JOptionPane.PLAIN_MESSAGE);
+        }
+
+
+        txtUsername.setText("");
+        txtPassword.setText("");
+
     }
 
 }

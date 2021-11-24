@@ -62,21 +62,22 @@ class ProductForm extends JFrame {
 
         GridBagConstraints c = new GridBagConstraints();
 
-        c.insets=new Insets(10,10,10,5);
+        c.insets=new Insets(8,8,8,4);
         c.fill=GridBagConstraints.BOTH;
-        c.weightx=(float)11/12; c.weighty=1.0;
+        c.weightx=11.0/12.0; c.weighty=1.0;
         c.gridx=0; c.gridy=0;
         pnlSearch.add(txtSearch,c);
-        c.insets=new Insets(10,5,10,10);
+
+        c.insets=new Insets(8,4,8,8);
         c.fill=GridBagConstraints.BOTH;
-        c.weightx=(float)1/12; c.weighty=1.0;
+        c.weightx=1.0/12.0; c.weighty=1.0;
         c.gridx=1; c.gridy=0;
         pnlSearch.add(btnSearch,c);
 
         GridLayout grdOperations=new GridLayout(0,3);
 
-        grdOperations.setHgap(10);
-        grdOperations.setVgap(10);
+        grdOperations.setHgap(16);
+        grdOperations.setVgap(16);
 
         pnlOperations.setLayout(grdOperations);
 
@@ -84,7 +85,7 @@ class ProductForm extends JFrame {
         pnlOperations.add(btnEdit);
         pnlOperations.add(btnRemove);
 
-        pnlOperations.setBorder(new EmptyBorder(10,10,10,10));
+        pnlOperations.setBorder(new EmptyBorder(8,8,8,8));
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {

@@ -53,20 +53,20 @@ class RegisterForm extends JFrame {
         btnOK.setText("OK");
         btnCancel.setText("Cancel");
 
-        lblUsername.setBounds(20,20,80,30);
-        lblPassword1.setBounds(20,70,80,30);
-        lblPassword2.setBounds(20,120,80,30);
-        txtUsername.setBounds(120,20,240,30);
-        txtPassword1.setBounds(120,70,240,30);
-        txtPassword2.setBounds(120,120,240,30);
-        btnOK.setBounds(20,170,340,30);
-        btnCancel.setBounds(20,220,340,30);
+        lblUsername.setBounds(16,16,96,32);
+        lblPassword1.setBounds(16,64,96,32);
+        lblPassword2.setBounds(16,128,96,32);
+        txtUsername.setBounds(128,16,256,32);
+        txtPassword1.setBounds(128,64,256,32);
+        txtPassword2.setBounds(127,128,256,32);
+        btnOK.setBounds(16,192,256,32);
+        btnCancel.setBounds(16,256,256,32);
 
         btnOK.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                String userrole="user";
-                String username=txtUsername.getText();
+                String userRole="user";
+                String userName=txtUsername.getText();
                 char[] password1=txtPassword1.getPassword();
                 char[] password2=txtPassword2.getPassword();
 
@@ -85,11 +85,11 @@ class RegisterForm extends JFrame {
 
                     try {
                         Class.forName("org.sqlite.JDBC");
-                        conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.db_path);
+                        conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
 
                         String sql = "SELECT USER_NAME FROM USER WHERE USER_NAME=?;";
                         pstmt = conn.prepareStatement(sql);
-                        pstmt.setString(1,username);
+                        pstmt.setString(1,userName);
                         rs=pstmt.executeQuery();
 
                         if(rs.next()) {
@@ -110,12 +110,12 @@ class RegisterForm extends JFrame {
 
                         try {
                             Class.forName("org.sqlite.JDBC");
-                            conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.db_path);
+                            conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
 
                             String sql = "INSERT INTO USER (USER_ROLE,USER_NAME,USER_PASS) VALUES (?,?,?);";
                             pstmt = conn.prepareStatement(sql);
-                            pstmt.setString(1,userrole);
-                            pstmt.setString(2,username);
+                            pstmt.setString(1,userRole);
+                            pstmt.setString(2,userName);
                             pstmt.setString(3,MD5.getMd5(new String(password1)));
                             pstmt.executeUpdate();
 

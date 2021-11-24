@@ -40,6 +40,8 @@ class AddProductForm extends JFrame {
     JLabel lblProductImage = new JLabel();
     JButton btnBrowse = new JButton();
     JButton btnRemove = new JButton();
+    JButton btnCancel = new JButton();
+    JButton btnOK = new JButton();
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
 
@@ -50,13 +52,13 @@ class AddProductForm extends JFrame {
     void createGui() {
         setTitle("Add Product");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(296,480);
+        setSize(296,508);
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
 
         lblProductImage.setForeground(Color.WHITE);
-        lblProductImage.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        lblProductImage.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         lblProductImage.setHorizontalAlignment(SwingConstants.CENTER);
         lblProductImage.setVerticalAlignment(SwingConstants.CENTER);
 
@@ -65,6 +67,8 @@ class AddProductForm extends JFrame {
 
         btnBrowse.setText("Browse");
         btnRemove.setText("Remove");
+        btnCancel.setText("Cancel");
+        btnOK.setText("OK");
 
         lblPrice.setBounds(16,340,64,32);
         lblQuantity.setBounds(16,388,64,32);
@@ -74,7 +78,13 @@ class AddProductForm extends JFrame {
         btnRemove.setBounds(160,288,96,32);
 
         txtPrice.setBounds(96,340,176,32);
+        txtPrice.setHorizontalAlignment(SwingConstants.RIGHT);
+
         txtQuantity.setBounds(96,388,176,32);
+        txtQuantity.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        btnCancel.setBounds(32,436,96,32);
+        btnOK.setBounds(160,436,96,32);
 
         btnBrowse.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
@@ -88,6 +98,18 @@ class AddProductForm extends JFrame {
             }
         });
 
+        btnCancel.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae) {
+                MainForm.productForm.addProductForm.setVisible(false);
+                MainForm.productForm.setVisible(true);
+            }
+        });
+
+        btnOK.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae) {
+            }
+        });
+
         add(lblProductImage);
         add(btnBrowse);
         add(btnRemove);
@@ -95,6 +117,8 @@ class AddProductForm extends JFrame {
         add(lblQuantity);
         add(txtPrice);
         add(txtQuantity);
+        add(btnCancel);
+        add(btnOK);
     }
 
     void browseImage(ActionEvent ae) {

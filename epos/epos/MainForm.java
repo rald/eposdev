@@ -9,9 +9,9 @@ import java.awt.event.ActionEvent;
 
 class MainForm extends JFrame {
 
-    static String db_path="./epos.db";
-    static int user_id = 0;
-    static String user_name = null;
+    static String dbPath="./epos.db";
+    static int userId = 0;
+    static String userName = null;
 
     static MainForm mainForm = new MainForm();
     static LoginForm loginForm = new LoginForm();
@@ -33,10 +33,10 @@ class MainForm extends JFrame {
         setLayout(null);
 
         btnLogout.setText("Logout");
-        btnLogout.setBounds(492,10,128,30);
+        btnLogout.setBounds(492,16,128,32);
 
         btnProduct.setText("Product");
-        btnProduct.setBounds(10,10,128,30);
+        btnProduct.setBounds(16,16,128,32);
 
         btnLogout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
