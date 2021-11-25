@@ -1,5 +1,7 @@
 package epos;
 
+
+import java.awt.Image;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -26,6 +29,12 @@ import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.SwingUtilities;
 import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Base64;
+import javax.imageio.ImageIO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +42,7 @@ import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
+import javax.swing.ListCellRenderer;
 
 class ProductForm extends JFrame {
 
@@ -48,9 +57,12 @@ class ProductForm extends JFrame {
     JButton     btnRemove = new JButton();
     JButton     btnCancel = new JButton();
 
-    JList       lstProduct = new JList();
+    JList       lstProduct = null;
 
+    JScrollPane spnProduct = new JScrollPane();
 
+    ImageIcon[] images = null;
+    String[] names = null;
 
     ProductForm() {
         createGui();
@@ -102,11 +114,11 @@ class ProductForm extends JFrame {
 
 
 
-/*
-        ListBoxRenderer renderer= new ListBoxRenderer();
-        renderer.setPreferredSize(new Dimension(200, 130));
-        lstProduct.setRenderer(renderer);
-*/
+
+        spnProduct=new JScrollPane(lstProduct);
+
+
+
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -141,6 +153,7 @@ class ProductForm extends JFrame {
 
         add(pnlSearch,BorderLayout.PAGE_START);
         add(pnlOperations,BorderLayout.PAGE_END);
+        add(spnProduct,BorderLayout.CENTER);
 
     }
 
@@ -175,14 +188,38 @@ class ProductForm extends JFrame {
             pstmt.setString(1,searchText);
             rs=pstmt.executeQuery();
 
+
+            ArrayList<Image> lstImage=new ArrayList<>();
+            ArrayList<String> lstName=new ArrayList<>();
+            ArrayList<Integer> lstInteger=new ArrayList<>();
+
+            int c=0;
+
             while(rs.next()) {
                 int id=rs.getInt("ID");
                 String name=rs.getString("PRODUCT_NAME");
                 int price=rs.getInt("PRODUCT_PRICE");
                 int quantity=rs.getInt("PRODUCT_QUANTITY");
+                String imageBase64=rs.getString("PRODUCT_IMAGE_BASE64");
+
+        		byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+                BufferedImage image = ImageIO.read(bais);
+
+                lstName.add(name);
+                lstImage.add(image);
 
                 System.out.printf("%04d %32s %.2f %4d\n",id,name,price/1000.0,quantity);
             }
+
+            names=(String[])lstName.toArray();
+            images=(ImageIcon[])lstImage.toArray();
+
+            lstProduct = new JList(names);
+            ListBoxRenderer renderer = new ListBoxRenderer();
+            renderer.setPreferredSize(new Dimension(200, 130));
+            lstProduct.setCellRenderer(renderer);
 
             rs.close();
             pstmt.close();
@@ -191,8 +228,64 @@ class ProductForm extends JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(MainForm.productForm,ex.getClass().getName()+": "+ex.getMessage(),"Message",JOptionPane.PLAIN_MESSAGE);
         }
-
     }
 
+    class ListBoxRenderer   extends JLabel
+                            implements ListCellRenderer {
+        private Font uhOhFont;
+
+        public ListBoxRenderer() {
+            setOpaque(true);
+            setHorizontalAlignment(CENTER);
+            setVerticalAlignment(CENTER);
+        }
+
+        /*
+         * This method finds the image and text corresponding
+         * to the selected value and returns the label, set up
+         * to display the text and image.
+         */
+        public Component getListCellRendererComponent(
+                                           JList list,
+                                           Object value,
+                                           int index,
+                                           boolean isSelected,
+                                           boolean cellHasFocus) {
+            //Get the selected index. (The index param isn't
+            //always valid, so just use the value.)
+            int selectedIndex = ((Integer)value).intValue();
+
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            //Set the icon and text.  If icon was null, say so.
+            ImageIcon icon = images[selectedIndex];
+            String name = names[selectedIndex];
+            setIcon(icon);
+            if (icon != null) {
+                setText(name);
+                setFont(list.getFont());
+            } else {
+                setUhOhText(name + " (no image available)",
+                            list.getFont());
+            }
+
+            return this;
+        }
+
+        //Set the font and text when no image was found.
+        protected void setUhOhText(String uhOhText, Font normalFont) {
+            if (uhOhFont == null) { //lazily create this font
+                uhOhFont = normalFont.deriveFont(Font.ITALIC);
+            }
+            setFont(uhOhFont);
+            setText(uhOhText);
+        }
+    }
 
 }
