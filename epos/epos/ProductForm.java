@@ -20,7 +20,9 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.JList;
+import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JPanel;
@@ -57,12 +59,13 @@ class ProductForm extends JFrame {
     JButton     btnRemove = new JButton();
     JButton     btnCancel = new JButton();
 
-    JList       lstProduct = null;
 
-    JScrollPane spnProduct = new JScrollPane();
+    DefaultListModel dlmProduct = new DefaultListModel();
+    JList       lstProduct = new JList(dlmProduct);
+    JScrollPane spnProduct = new JScrollPane(lstProduct);
+    ListCellRenderer renderer = new ListCellRenderer();
 
-    ImageIcon[] images = null;
-    String[] names = null;
+    Map<String,ImageIcon> mapProduct=null;
 
     ProductForm() {
         createGui();
@@ -112,12 +115,7 @@ class ProductForm extends JFrame {
 
         pnlOperations.setBorder(new EmptyBorder(8,8,8,8));
 
-
-
-
-        spnProduct=new JScrollPane(lstProduct);
-
-
+        lstProduct.setCellRenderer(renderer);
 
 
         btnSearch.addActionListener(new ActionListener() {
@@ -183,17 +181,13 @@ class ProductForm extends JFrame {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
 
-            String sql = "SELECT ID,PRODUCT_NAME,PRODUCT_PRICE,PRODUCT_QUANTITY,? AS SEARCH_TEXT FROM PRODUCT WHERE ID LIKE SEARCH_TEXT OR PRODUCT_NAME LIKE SEARCH_TEXT OR PRODUCT_PRICE LIKE SEARCH_TEXT OR PRODUCT_QUANTITY LIKE SEARCH_TEXT;";
+            String sql = "SELECT ID,PRODUCT_CODE,PRODUCT_NAME,PRODUCT_PRICE,PRODUCT_QUANTITY,PRODUCT_IMAGE_BASE64,'%'||?||'%' AS SEARCH_TEXT FROM PRODUCT WHERE ID LIKE SEARCH_TEXT OR PRODUCT_CODE LIKE SEARCH_TEXT OR PRODUCT_NAME LIKE SEARCH_TEXT OR PRODUCT_PRICE LIKE SEARCH_TEXT OR PRODUCT_QUANTITY LIKE SEARCH_TEXT;";
             pstmt=conn.prepareStatement(sql);
             pstmt.setString(1,searchText);
             rs=pstmt.executeQuery();
 
 
-            ArrayList<Image> lstImage=new ArrayList<>();
-            ArrayList<String> lstName=new ArrayList<>();
-            ArrayList<Integer> lstInteger=new ArrayList<>();
-
-            int c=0;
+            mapProduct=new HashMap();
 
             while(rs.next()) {
                 int id=rs.getInt("ID");
@@ -205,21 +199,21 @@ class ProductForm extends JFrame {
         		byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
 
                 ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
-                BufferedImage image = ImageIO.read(bais);
+                BufferedImage bi = ImageIO.read(bais);
+                ImageIcon icon = new ImageIcon(bi);
 
-                lstName.add(name);
-                lstImage.add(image);
+                mapProduct.put(name,icon);
 
                 System.out.printf("%04d %32s %.2f %4d\n",id,name,price/1000.0,quantity);
             }
 
-            names=(String[])lstName.toArray();
-            images=(ImageIcon[])lstImage.toArray();
+            dlmProduct.removeAllElements();
+            for(String key:mapProduct.keySet()) {
+                dlmProduct.addElement(key);
+            }
+            MainForm.productForm.revalidate();
+            MainForm.productForm.repaint();
 
-            lstProduct = new JList(names);
-            ListBoxRenderer renderer = new ListBoxRenderer();
-            renderer.setPreferredSize(new Dimension(200, 130));
-            lstProduct.setCellRenderer(renderer);
 
             rs.close();
             pstmt.close();
@@ -230,62 +224,21 @@ class ProductForm extends JFrame {
         }
     }
 
-    class ListBoxRenderer   extends JLabel
-                            implements ListCellRenderer {
-        private Font uhOhFont;
+    public class ListCellRenderer extends DefaultListCellRenderer {
 
-        public ListBoxRenderer() {
-            setOpaque(true);
-            setHorizontalAlignment(CENTER);
-            setVerticalAlignment(CENTER);
-        }
+        Font font = new Font("helvetica", Font.BOLD, 24);
 
-        /*
-         * This method finds the image and text corresponding
-         * to the selected value and returns the label, set up
-         * to display the text and image.
-         */
+        @Override
         public Component getListCellRendererComponent(
-                                           JList list,
-                                           Object value,
-                                           int index,
-                                           boolean isSelected,
-                                           boolean cellHasFocus) {
-            //Get the selected index. (The index param isn't
-            //always valid, so just use the value.)
-            int selectedIndex = ((Integer)value).intValue();
+                JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
 
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-
-            //Set the icon and text.  If icon was null, say so.
-            ImageIcon icon = images[selectedIndex];
-            String name = names[selectedIndex];
-            setIcon(icon);
-            if (icon != null) {
-                setText(name);
-                setFont(list.getFont());
-            } else {
-                setUhOhText(name + " (no image available)",
-                            list.getFont());
-            }
-
-            return this;
-        }
-
-        //Set the font and text when no image was found.
-        protected void setUhOhText(String uhOhText, Font normalFont) {
-            if (uhOhFont == null) { //lazily create this font
-                uhOhFont = normalFont.deriveFont(Font.ITALIC);
-            }
-            setFont(uhOhFont);
-            setText(uhOhText);
+            JLabel label = (JLabel) super.getListCellRendererComponent(
+                    list, value, index, isSelected, cellHasFocus);
+            label.setIcon(mapProduct.get(value));
+            label.setHorizontalTextPosition(JLabel.RIGHT);
+            label.setFont(font);
+            return label;
         }
     }
-
 }

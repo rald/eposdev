@@ -43,7 +43,7 @@ public class CreateProductTable {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:"+path);
 
-            String sql = "CREATE TABLE PRODUCT (ID INTEGER PRIMARY KEY AUTOINCREMENT,PRODUCT_NAME TEXT,PRODUCT_PRICE INTEGER, PRODUCT_QUANTITY INTEGER,PRODUCT_IMAGE_BASE64 TEXT);";
+            String sql = "CREATE TABLE PRODUCT (ID INTEGER PRIMARY KEY AUTOINCREMENT,PRODUCT_CODE TEXT,PRODUCT_NAME TEXT,PRODUCT_PRICE INTEGER, PRODUCT_QUANTITY INTEGER,PRODUCT_IMAGE_BASE64 TEXT);";
             stmt = conn.createStatement();
             stmt.execute(sql);
 
