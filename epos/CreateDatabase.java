@@ -27,7 +27,6 @@ public class CreateDatabase {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(1);
         }
     }
 

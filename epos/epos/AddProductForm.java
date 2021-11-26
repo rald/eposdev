@@ -53,6 +53,7 @@ import java.sql.SQLException;
 
 class AddProductForm extends JFrame {
 
+    JLabel lblCode = new JLabel();
     JLabel lblName = new JLabel();
     JLabel lblPrice = new JLabel();
     JLabel lblQuantity = new JLabel();
@@ -62,6 +63,7 @@ class AddProductForm extends JFrame {
     JButton btnRemove = new JButton();
     JButton btnCancel = new JButton();
     JButton btnOK = new JButton();
+    JTextField txtCode = new JTextField();
     JTextField txtName = new JTextField();
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
@@ -75,7 +77,7 @@ class AddProductForm extends JFrame {
     void createGui() {
         setTitle(MainForm.appName+" - Add Product");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(296,576);
+        setSize(296,608);
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
@@ -85,6 +87,7 @@ class AddProductForm extends JFrame {
         lblProduct.setHorizontalAlignment(SwingConstants.CENTER);
         lblProduct.setVerticalAlignment(SwingConstants.CENTER);
 
+        lblCode.setText("Code");
         lblName.setText("Name");
         lblPrice.setText("Price");
         lblQuantity.setText("Quantity");
@@ -94,24 +97,26 @@ class AddProductForm extends JFrame {
         btnCancel.setText("Cancel");
         btnOK.setText("OK");
 
-        lblName.setBounds(16,340,64,32);
-        lblPrice.setBounds(16,388,64,32);
-        lblQuantity.setBounds(16,436,64,32);
+        lblCode.setBounds(16,340,64,32);
+        lblName.setBounds(16,388,64,32);
+        lblPrice.setBounds(16,436,64,32);
+        lblQuantity.setBounds(16,484,64,32);
 
         lblProduct.setBounds(16,16,256,256);
         btnBrowse.setBounds(16,288,96,32);
         btnRemove.setBounds(176,288,96,32);
 
-        txtName.setBounds(96,340,176,32);
+        txtCode.setBounds(96,340,176,32);
+        txtName.setBounds(96,388,176,32);
 
-        txtPrice.setBounds(96,388,176,32);
+        txtPrice.setBounds(96,436,176,32);
         txtPrice.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        txtQuantity.setBounds(96,436,176,32);
+        txtQuantity.setBounds(96,484,176,32);
         txtQuantity.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        btnCancel.setBounds(16,484,96,32);
-        btnOK.setBounds(176,484,96,32);
+        btnCancel.setBounds(16,532,96,32);
+        btnOK.setBounds(176,532,96,32);
 
         btnBrowse.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
@@ -142,9 +147,11 @@ class AddProductForm extends JFrame {
         add(lblProduct);
         add(btnBrowse);
         add(btnRemove);
+        add(lblCode);
         add(lblName);
         add(lblPrice);
         add(lblQuantity);
+        add(txtCode);
         add(txtName);
         add(txtPrice);
         add(txtQuantity);
@@ -177,10 +184,11 @@ class AddProductForm extends JFrame {
     void addProduct() {
 
         try {
+            String code=txtCode.getText();
             String name=txtName.getText();
             int price=(int)(Double.valueOf(txtPrice.getText())*1000);
             int quantity = Integer.valueOf(txtQuantity.getText());
-            String base64IcnProduct = new String(convertImageIconToBase64(icnProduct));
+            String icnProductBase64 = new String(convertImageIconToBase64(icnProduct));
 
             Connection conn = null;
             PreparedStatement pstmt = null;
@@ -189,12 +197,13 @@ class AddProductForm extends JFrame {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
 
-            String sql = "INSERT INTO PRODUCT (PRODUCT_NAME,PRODUCT_PRICE,PRODUCT_QUANTITY,PRODUCT_IMAGE_BASE64) VALUES (?,?,?,?);";
+            String sql = "INSERT INTO PRODUCT (PRODUCT_CODE,PRODUCT_NAME,PRODUCT_PRICE,PRODUCT_QUANTITY,PRODUCT_IMAGE_BASE64) VALUES (?,?,?,?,?);";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,name);
-            pstmt.setInt(2,price);
-            pstmt.setInt(3,quantity);
-            pstmt.setString(4,base64IcnProduct);
+            pstmt.setString(1,code);
+            pstmt.setString(2,name);
+            pstmt.setInt(3,price);
+            pstmt.setInt(4,quantity);
+            pstmt.setString(5,icnProductBase64);
             pstmt.executeUpdate();
 
             pstmt.close();
@@ -237,7 +246,7 @@ class AddProductForm extends JFrame {
 
 	    } catch(Exception ex) {
 	        ex.printStackTrace();
-            JOptionPane.showMessageDialog(MainForm.registerForm,ex.getClass().getName() + ": " + ex.getMessage(),"Register Message",JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(MainForm.addProductForm,ex.getClass().getName() + ": " + ex.getMessage(),"Register Message",JOptionPane.PLAIN_MESSAGE);
        	}
 
        	return null;
@@ -245,6 +254,7 @@ class AddProductForm extends JFrame {
 
     void clearForm() {
         removeProductImage();
+        txtCode.setText("");
         txtName.setText("");
         txtPrice.setText("");
         txtQuantity.setText("");

@@ -60,10 +60,10 @@ class ProductForm extends JFrame {
     JButton     btnCancel = new JButton();
 
 
-    DefaultListModel dlmProduct = new DefaultListModel();
-    JList       lstProduct = new JList(dlmProduct);
-    JScrollPane spnProduct = new JScrollPane(lstProduct);
-    ListCellRenderer renderer = new ListCellRenderer();
+    DefaultListModel<String> dlmProduct = new DefaultListModel<>();
+    JList<String>            lstProduct = new JList<>(dlmProduct);
+    JScrollPane              spnProduct = new JScrollPane(lstProduct);
+    ListCellRenderer         renderer   = new ListCellRenderer();
 
     Map<String,ImageIcon> mapProduct=null;
 
@@ -186,8 +186,7 @@ class ProductForm extends JFrame {
             pstmt.setString(1,searchText);
             rs=pstmt.executeQuery();
 
-
-            mapProduct=new HashMap();
+            mapProduct=new HashMap<>();
 
             while(rs.next()) {
                 int id=rs.getInt("ID");
