@@ -70,8 +70,6 @@ class EditProductForm extends JFrame {
 
     ImageIcon icnNoImage = null;
 
-    ImageIcon icnProduct = null;
-
     int selectedProductId=-1;
 
     EditProductForm() {
@@ -87,13 +85,12 @@ class EditProductForm extends JFrame {
         setLayout(null);
 
         icnNoImage = new ImageIcon(getClass().getResource("/epos/images/no_image.png"));
-        icnProduct = icnNoImage;
 
         lblProduct.setForeground(Color.WHITE);
         lblProduct.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         lblProduct.setHorizontalAlignment(SwingConstants.CENTER);
         lblProduct.setVerticalAlignment(SwingConstants.CENTER);
-        lblProduct.setIcon(icnProduct);
+        lblProduct.setIcon(icnNoImage);
 
         lblCode.setText("Code");
         lblName.setText("Name");
@@ -174,8 +171,7 @@ class EditProductForm extends JFrame {
             int res = fc.showOpenDialog(null);
 
             if (res == JFileChooser.APPROVE_OPTION) {
-                icnProduct=new ImageIcon(fc.getSelectedFile().getAbsolutePath());
-                lblProduct.setIcon(icnProduct);
+                lblProduct.setIcon(new ImageIcon(fc.getSelectedFile().getAbsolutePath()));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -185,8 +181,7 @@ class EditProductForm extends JFrame {
     }
 
     void removeProductImage() {
-        icnProduct=icnNoImage;
-        lblProduct.setIcon(icnProduct);
+        lblProduct.setIcon(icnNoImage);
     }
 
     void updateProduct() {
@@ -197,8 +192,8 @@ class EditProductForm extends JFrame {
             int price=(int)(Double.valueOf(txtPrice.getText())*1000);
             int quantity = Integer.valueOf(txtQuantity.getText());
             String icnProductBase64=null;
-            if(icnProduct!=null) {
-                icnProductBase64 = new String(convertImageIconToBase64(icnProduct));
+            if(lblProduct.getIcon()!=null) {
+                icnProductBase64 = new String(convertImageIconToBase64((ImageIcon)lblProduct.getIcon()));
             }
             Connection conn = null;
             PreparedStatement pstmt = null;
@@ -241,9 +236,9 @@ class EditProductForm extends JFrame {
         try {
 
             BufferedImage bi = new BufferedImage(
-                icon.getIconWidth(),
-                icon.getIconHeight(),
-                BufferedImage.TYPE_INT_RGB);
+                    icon.getIconWidth(),
+                    icon.getIconHeight(),
+                    BufferedImage.TYPE_INT_RGB);
             Graphics g = bi.createGraphics();
             icon.paintIcon(null,g,0,0);
             g.dispose();
