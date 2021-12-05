@@ -1,4 +1,4 @@
 #!/bin/sh
 rm *.class
 rm epos.jar
-rm -r bin/*
+rm  bin/epos/*.class

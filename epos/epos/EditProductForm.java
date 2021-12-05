@@ -68,9 +68,9 @@ class EditProductForm extends JFrame {
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
 
-    ImageIcon icnNoImage = new ImageIcon(this.getClass().getResource("bin/images/No Image.png"));
+    ImageIcon icnNoImage = null;
 
-    ImageIcon icnProduct = icnNoImage;
+    ImageIcon icnProduct = null;
 
     int selectedProductId=-1;
 
@@ -85,6 +85,9 @@ class EditProductForm extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
+
+        icnNoImage = new ImageIcon(getClass().getResource("/epos/images/no_image.png"));
+        icnProduct = icnNoImage;
 
         lblProduct.setForeground(Color.WHITE);
         lblProduct.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));

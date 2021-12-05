@@ -68,9 +68,9 @@ class AddProductForm extends JFrame {
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
 
-    ImageIcon icnNoImage = new ImageIcon(this.getClass().getResource("images/No Image.png"));
+    ImageIcon icnNoImage = null;
 
-    ImageIcon icnProduct = icnNoImage;
+    ImageIcon icnProduct = null;
 
     AddProductForm() {
         createGui();
@@ -83,6 +83,9 @@ class AddProductForm extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
+
+        icnNoImage = new ImageIcon(getClass().getResource("/epos/images/no_image.png"));
+        icnProduct = icnNoImage;
 
         lblProduct.setForeground(Color.WHITE);
         lblProduct.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
