@@ -255,7 +255,7 @@ class ProductForm extends JFrame {
 
                 }
 
-                lstProductInfo.add(new ProductInfo(id,String.format("%s Php %.2f",name,price/1000.0),icon));
+                lstProductInfo.add(new ProductInfo(id,String.format("%s for PHP %.2f",name,price/1000.0),icon));
 
                 System.out.printf("%04d %-12s %-32s %.2f %4d\n",id,code,name,price/1000.0,quantity);
             }
