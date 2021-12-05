@@ -31,8 +31,8 @@ class AdminForm extends JFrame {
 
         btnLogout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                MainForm.adminForm.setVisible(false);
                 MainForm.loginForm.setVisible(true);
-                MainForm.mainForm.setVisible(false);
             }
         });
 
