@@ -167,7 +167,7 @@ class EditProductForm extends JFrame {
     void browseImage() {
         try {
             JFileChooser fc = new JFileChooser(".");
-            fc.setFileFilter(new JpegImageFileFilter());
+            fc.setFileFilter(new ImageFileFilter());
             int res = fc.showOpenDialog(null);
 
             if (res == JFileChooser.APPROVE_OPTION) {
