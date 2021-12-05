@@ -92,7 +92,7 @@ class LoginForm extends JFrame {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
 
-            String sql = "SELECT ID,USER_NAME,USER_PASS FROM USER WHERE USER_NAME=? AND USER_PASS=?;";
+            String sql = "SELECT ID,USER_ROLE,USER_NAME,USER_PASS FROM USER WHERE USER_NAME=? AND USER_PASS=?;";
             pstmt = conn.prepareStatement(sql,ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
             pstmt.setString(1,username);
             pstmt.setString(2,password);
@@ -100,8 +100,8 @@ class LoginForm extends JFrame {
 
             if(rs.next()) {
                 MainForm.userId=rs.getInt("ID");
+                MainForm.userRole=rs.getString("USER_ROLE");
                 MainForm.userName=rs.getString("USER_NAME");
-                MainForm.mainForm.setTitle(MainForm.appName+" - Welcome "+MainForm.userName);
                 valid=true;
             }
 
@@ -117,7 +117,13 @@ class LoginForm extends JFrame {
         if(valid) {
             JOptionPane.showMessageDialog(MainForm.loginForm,"Access Granted","Message",JOptionPane.PLAIN_MESSAGE);
             MainForm.loginForm.setVisible(false);
-            MainForm.mainForm.setVisible(true);
+            if(MainForm.userRole.equals("admin")) {
+                MainForm.adminForm.setTitle(MainForm.appName+" - Welcome "+MainForm.userName);
+                MainForm.adminForm.setVisible(true);
+            } else if(MainForm.userRole.equals("user")) {
+                MainForm.mainForm.setTitle(MainForm.appName+" - Welcome "+MainForm.userName);
+                MainForm.mainForm.setVisible(true);
+            }
         } else {
             JOptionPane.showMessageDialog(MainForm.loginForm,"Access Denied","Message",JOptionPane.PLAIN_MESSAGE);
         }
