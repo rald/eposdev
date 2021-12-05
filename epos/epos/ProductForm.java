@@ -139,7 +139,7 @@ class ProductForm extends JFrame {
 
         btnRemove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                removeProductForm();
+                removeProduct();
             }
         });
 
@@ -170,12 +170,47 @@ class ProductForm extends JFrame {
             MainForm.editProductForm.loadProduct(selectedProductId);
             MainForm.editProductForm.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(MainForm.editProductForm,"Please select a product.","Message",JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(MainForm.productForm,"Please select a product.","Message",JOptionPane.PLAIN_MESSAGE);
         }
     }
 
-    void removeProductForm() {
-        JOptionPane.showMessageDialog(MainForm.productForm,"Remove Product","Message",JOptionPane.PLAIN_MESSAGE);
+    void removeProduct() {
+        int selectedIndex=lstProduct.getSelectedIndex();
+        if(selectedIndex!=-1) {
+
+            int dialogButton = JOptionPane.showConfirmDialog (null, "Are you sure?","WARNING",JOptionPane.YES_NO_OPTION);
+
+            if(dialogButton == JOptionPane.YES_OPTION) {
+
+                int selectedProductId=((ProductInfo)lstProductInfo.get(selectedIndex)).id;
+
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    conn = DriverManager.getConnection("jdbc:sqlite:"+MainForm.dbPath);
+
+                    String sql = "DELETE FROM PRODUCT WHERE ID=?;";
+                    pstmt=conn.prepareStatement(sql);
+                    pstmt.setInt(1,selectedProductId);
+                    if(pstmt.executeUpdate()==0) {
+                        JOptionPane.showMessageDialog(MainForm.productForm,"Error removing product.","Message",JOptionPane.PLAIN_MESSAGE);
+                    }
+
+                    pstmt.close();
+                    conn.close();
+
+                } catch ( Exception ex ) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(MainForm.productForm,ex.getClass().getName()+": "+ex.getMessage(),"Message",JOptionPane.PLAIN_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(MainForm.productForm,"Remove product canceled","Message",JOptionPane.PLAIN_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(MainForm.productForm,"Please select a product.","Message",JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     void searchProduct(String searchText) {
