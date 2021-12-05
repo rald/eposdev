@@ -84,7 +84,7 @@ class ProductForm extends JFrame {
         btnAdd.setText("Add");
         btnEdit.setText("Edit");
         btnRemove.setText("Remove");
-        btnBack.setText("Back to Main");
+        btnBack.setText("Back");
 
         pnlSearch.setLayout(new GridBagLayout());
 
@@ -147,7 +147,7 @@ class ProductForm extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 txtSearch.setText("");
                 MainForm.productForm.setVisible(false);
-                MainForm.mainForm.setVisible(true);
+                MainForm.adminForm.setVisible(true);
             }
         });
 

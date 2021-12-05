@@ -38,7 +38,7 @@ class AdminForm extends JFrame {
 
         btnProduct.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                MainForm.mainForm.setVisible(false);
+                MainForm.adminForm.setVisible(false);
                 MainForm.productForm.setVisible(true);
             }
         });
