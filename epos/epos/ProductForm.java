@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JPanel;
@@ -57,7 +58,7 @@ class ProductForm extends JFrame {
     JButton     btnAdd = new JButton();
     JButton     btnEdit = new JButton();
     JButton     btnRemove = new JButton();
-    JButton     btnCancel = new JButton();
+    JButton     btnBack = new JButton();
 
 
     DefaultListModel<String> dlmProduct = new DefaultListModel<>();
@@ -65,7 +66,7 @@ class ProductForm extends JFrame {
     JScrollPane              spnProduct = new JScrollPane(lstProduct);
     ListCellRenderer         renderer   = new ListCellRenderer();
 
-    Map<String,ImageIcon> mapProduct=null;
+    ArrayList<ProductInfo> lstProductInfo=new ArrayList<>();
 
     ProductForm() {
         createGui();
@@ -83,7 +84,7 @@ class ProductForm extends JFrame {
         btnAdd.setText("Add");
         btnEdit.setText("Edit");
         btnRemove.setText("Remove");
-        btnCancel.setText("Cancel");
+        btnBack.setText("Back to Main");
 
         pnlSearch.setLayout(new GridBagLayout());
 
@@ -111,12 +112,12 @@ class ProductForm extends JFrame {
         pnlOperations.add(btnAdd);
         pnlOperations.add(btnEdit);
         pnlOperations.add(btnRemove);
-        pnlOperations.add(btnCancel);
+        pnlOperations.add(btnBack);
 
         pnlOperations.setBorder(new EmptyBorder(8,8,8,8));
 
+        lstProduct.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lstProduct.setCellRenderer(renderer);
-
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -142,8 +143,9 @@ class ProductForm extends JFrame {
             }
         });
 
-        btnCancel.addActionListener(new ActionListener() {
+        btnBack.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                txtSearch.setText("");
                 MainForm.productForm.setVisible(false);
                 MainForm.mainForm.setVisible(true);
             }
@@ -154,7 +156,6 @@ class ProductForm extends JFrame {
         add(spnProduct,BorderLayout.CENTER);
 
     }
-
 
     void addProductForm() {
         MainForm.productForm.setVisible(false);
@@ -186,10 +187,12 @@ class ProductForm extends JFrame {
             pstmt.setString(1,searchText);
             rs=pstmt.executeQuery();
 
-            mapProduct=new HashMap<>();
+            lstProductInfo=new ArrayList<>();
 
+            int i=0;
             while(rs.next()) {
                 int id=rs.getInt("ID");
+                String code=rs.getString("PRODUCT_CODE");
                 String name=rs.getString("PRODUCT_NAME");
                 int price=rs.getInt("PRODUCT_PRICE");
                 int quantity=rs.getInt("PRODUCT_QUANTITY");
@@ -201,14 +204,14 @@ class ProductForm extends JFrame {
                 BufferedImage bi = ImageIO.read(bais);
                 ImageIcon icon = new ImageIcon(bi);
 
-                mapProduct.put(name,icon);
+                lstProductInfo.add(new ProductInfo(id,String.format("%s Php %.2f",name,price/1000.0),icon));
 
-                System.out.printf("%04d %32s %.2f %4d\n",id,name,price/1000.0,quantity);
+                System.out.printf("%04d %-12s %-32s %.2f %4d\n",id,code,name,price/1000.0,quantity);
             }
 
             dlmProduct.removeAllElements();
-            for(String key:mapProduct.keySet()) {
-                dlmProduct.addElement(key);
+            for(ProductInfo productInfo:lstProductInfo) {
+                dlmProduct.addElement(productInfo.name);
             }
             MainForm.productForm.revalidate();
             MainForm.productForm.repaint();
@@ -217,6 +220,8 @@ class ProductForm extends JFrame {
             rs.close();
             pstmt.close();
             conn.close();
+
+            txtSearch.setText("");
         } catch ( Exception ex ) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(MainForm.productForm,ex.getClass().getName()+": "+ex.getMessage(),"Message",JOptionPane.PLAIN_MESSAGE);
@@ -234,10 +239,22 @@ class ProductForm extends JFrame {
 
             JLabel label = (JLabel) super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus);
-            label.setIcon(mapProduct.get(value));
+            label.setIcon(((ProductInfo)lstProductInfo.get(index)).icon);
             label.setHorizontalTextPosition(JLabel.RIGHT);
             label.setFont(font);
             return label;
         }
     }
+
+    class ProductInfo {
+        Integer id;
+        String name;
+        ImageIcon icon;
+        ProductInfo(Integer id,String name,ImageIcon icon) {
+            this.id=id;
+            this.name=name;
+            this.icon=icon;
+        }
+    }
+
 }

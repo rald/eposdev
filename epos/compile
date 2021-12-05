@@ -1,6 +1,4 @@
 #!/bin/sh
-rm -r bin/*
-rm epos.jar
 javac -d bin epos/*.java
 if [ $? -eq 0 ]; then
     jar cvfm epos.jar manifest.txt sqlite-jdbc-3.5.9-universal.jar -C bin epos
