@@ -68,7 +68,9 @@ class EditProductForm extends JFrame {
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
 
-    ImageIcon icnProduct = new ImageIcon("products/No Image.png");
+    ImageIcon icnNoImage = new ImageIcon(this.getClass().getResource("bin/images/No Image.png"));
+
+    ImageIcon icnProduct = icnNoImage;
 
     int selectedProductId=-1;
 
@@ -180,7 +182,7 @@ class EditProductForm extends JFrame {
     }
 
     void removeProductImage() {
-        icnProduct=new ImageIcon("products/No Image.png");
+        icnProduct=icnNoImage;
         lblProduct.setIcon(icnProduct);
     }
 
