@@ -19,6 +19,7 @@ class MainForm extends JFrame {
     static RegisterForm registerForm = new RegisterForm();
     static ProductForm productForm = new ProductForm();
     static AddProductForm addProductForm = new AddProductForm();
+    static EditProductForm editProductForm = new EditProductForm();
 
     JButton btnLogout = new JButton();
     JButton btnProduct = new JButton();

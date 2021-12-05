@@ -163,7 +163,15 @@ class ProductForm extends JFrame {
     }
 
     void editProductForm() {
-        JOptionPane.showMessageDialog(MainForm.productForm,"Edit Product","Message",JOptionPane.PLAIN_MESSAGE);
+        int selectedIndex=lstProduct.getSelectedIndex();
+        if(selectedIndex!=-1) {
+            int selectedProductId=((ProductInfo)lstProductInfo.get(selectedIndex)).id;
+            MainForm.productForm.setVisible(false);
+            MainForm.editProductForm.loadProduct(selectedProductId);
+            MainForm.editProductForm.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(MainForm.editProductForm,"Please select a product.","Message",JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     void removeProductForm() {
@@ -198,11 +206,17 @@ class ProductForm extends JFrame {
                 int quantity=rs.getInt("PRODUCT_QUANTITY");
                 String imageBase64=rs.getString("PRODUCT_IMAGE_BASE64");
 
-        		byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+                ImageIcon icon = null;
 
-                ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
-                BufferedImage bi = ImageIO.read(bais);
-                ImageIcon icon = new ImageIcon(bi);
+                if(imageBase64!=null) {
+
+            		byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+                    BufferedImage bi = ImageIO.read(bais);
+                    icon = new ImageIcon(bi);
+
+                }
 
                 lstProductInfo.add(new ProductInfo(id,String.format("%s Php %.2f",name,price/1000.0),icon));
 

@@ -68,7 +68,7 @@ class AddProductForm extends JFrame {
     JTextField txtPrice = new JTextField();
     JTextField txtQuantity = new JTextField();
 
-    ImageIcon icnProduct = null;
+    ImageIcon icnProduct = new ImageIcon("products/No Image.png");;
 
     AddProductForm() {
         createGui();
@@ -86,6 +86,7 @@ class AddProductForm extends JFrame {
         lblProduct.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         lblProduct.setHorizontalAlignment(SwingConstants.CENTER);
         lblProduct.setVerticalAlignment(SwingConstants.CENTER);
+        lblProduct.setIcon(icnProduct);
 
         lblCode.setText("Code");
         lblName.setText("Name");
@@ -177,8 +178,8 @@ class AddProductForm extends JFrame {
     }
 
     void removeProductImage() {
-        icnProduct=null;
-        lblProduct.setIcon(null);
+        icnProduct=new ImageIcon("products/No Image.png");
+        lblProduct.setIcon(icnProduct);
     }
 
     void addProduct() {
