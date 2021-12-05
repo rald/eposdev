@@ -196,6 +196,8 @@ class ProductForm extends JFrame {
                     pstmt.setInt(1,selectedProductId);
                     if(pstmt.executeUpdate()==0) {
                         JOptionPane.showMessageDialog(MainForm.productForm,"Error removing product.","Message",JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(MainForm.productForm,"Product removed.","Message",JOptionPane.PLAIN_MESSAGE);
                     }
 
                     pstmt.close();
@@ -206,7 +208,7 @@ class ProductForm extends JFrame {
                     JOptionPane.showMessageDialog(MainForm.productForm,ex.getClass().getName()+": "+ex.getMessage(),"Message",JOptionPane.PLAIN_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(MainForm.productForm,"Remove product canceled","Message",JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(MainForm.productForm,"Remove product canceled.","Message",JOptionPane.PLAIN_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(MainForm.productForm,"Please select a product.","Message",JOptionPane.PLAIN_MESSAGE);
