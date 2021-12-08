@@ -1,6 +1,8 @@
 package epos;
 
 
+import java.awt.Graphics;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -251,13 +253,12 @@ class ProductForm extends JFrame {
 
                     ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
                     BufferedImage bi = ImageIO.read(bais);
-                    icon = new ImageIcon(bi);
-
+                    icon = new ImageIcon(pad(bi,256,256,Color.white));
                 }
 
                 lstProductInfo.add(new ProductInfo(id,String.format("%s @ PHP %,.2f",name,price/1000.0),icon));
 
-                System.out.printf("%04d %-12s %-32s %.2f %4d\n",id,code,name,price/1000.0,quantity);
+                System.out.printf("%04d %-12s %-32s %,12.2f %4d\n",id,code,name,price/1000.0,quantity);
             }
 
             dlmProduct.removeAllElements();
@@ -308,4 +309,35 @@ class ProductForm extends JFrame {
         }
     }
 
+    static BufferedImage pad(BufferedImage image, double width, double height, Color pad) {
+        double ratioW = image.getWidth() / width;
+        double ratioH = image.getHeight() / height;
+        double newWidth = width, newHeight = height;
+        int fitW = 0, fitH = 0;
+        BufferedImage resultImage;
+        Image resize;
+
+        //padding width
+        if (ratioW < ratioH) {
+            newWidth = image.getWidth() / ratioH;
+            newHeight = image.getHeight() / ratioH;
+            fitW = (int) ((width - newWidth) / 2.0);
+
+        }//padding height
+        else if (ratioH < ratioW) {
+            newWidth = image.getWidth() / ratioW;
+            newHeight = image.getHeight() / ratioW;
+            fitH = (int) ((height - newHeight) / 2.0);
+        }
+
+        resize = image.getScaledInstance((int) newWidth, (int) newHeight, Image.SCALE_SMOOTH);
+        resultImage = new BufferedImage((int) width, (int) height, image.getType());
+        Graphics g = resultImage.getGraphics();
+        g.setColor(pad);
+        g.fillRect(0, 0, (int) width, (int) height);
+        g.drawImage(resize, fitW, fitH, null);
+        g.dispose();
+
+        return resultImage;
+    }
 }

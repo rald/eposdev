@@ -1,0 +1,4 @@
+#!/bin/sh
+rm *.class
+rm epos.jar
+rm  bin/epos/*.class

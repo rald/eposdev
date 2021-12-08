@@ -1,6 +1,7 @@
 package epos;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -194,6 +195,8 @@ class AddProductForm extends JFrame {
             String name=txtName.getText();
             int price=(int)(Double.valueOf(txtPrice.getText())*1000);
             int quantity = Integer.valueOf(txtQuantity.getText());
+            BufferedImage bi=(BufferedImage)((Image)icnProduct.getImage());
+            icnProduct=new ImageIcon(pad(bi,256,256,Color.white));
             String icnProductBase64 = new String(convertImageIconToBase64(icnProduct));
 
             Connection conn = null;
@@ -264,6 +267,39 @@ class AddProductForm extends JFrame {
         txtName.setText("");
         txtPrice.setText("");
         txtQuantity.setText("");
+    }
+
+
+    static BufferedImage pad(BufferedImage image, double width, double height, Color pad) {
+        double ratioW = image.getWidth() / width;
+        double ratioH = image.getHeight() / height;
+        double newWidth = width, newHeight = height;
+        int fitW = 0, fitH = 0;
+        BufferedImage resultImage;
+        Image resize;
+
+        //padding width
+        if (ratioW < ratioH) {
+            newWidth = image.getWidth() / ratioH;
+            newHeight = image.getHeight() / ratioH;
+            fitW = (int) ((width - newWidth) / 2.0);
+
+        }//padding height
+        else if (ratioH < ratioW) {
+            newWidth = image.getWidth() / ratioW;
+            newHeight = image.getHeight() / ratioW;
+            fitH = (int) ((height - newHeight) / 2.0);
+        }
+
+        resize = image.getScaledInstance((int) newWidth, (int) newHeight, Image.SCALE_SMOOTH);
+        resultImage = new BufferedImage((int) width, (int) height, image.getType());
+        Graphics g = resultImage.getGraphics();
+        g.setColor(pad);
+        g.fillRect(0, 0, (int) width, (int) height);
+        g.drawImage(resize, fitW, fitH, null);
+        g.dispose();
+
+        return resultImage;
     }
 
 }
