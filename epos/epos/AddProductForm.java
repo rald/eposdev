@@ -1,5 +1,6 @@
 package epos;
 
+import sun.awt.image.ToolkitImage;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Color;
@@ -195,7 +196,8 @@ class AddProductForm extends JFrame {
             String name=txtName.getText();
             int price=(int)(Double.valueOf(txtPrice.getText())*1000);
             int quantity = Integer.valueOf(txtQuantity.getText());
-            BufferedImage bi=(BufferedImage)((Image)icnProduct.getImage());
+            Image image=icnProduct.getImage();
+            BufferedImage bi=((ToolkitImage)image).getBufferedImage();
             icnProduct=new ImageIcon(pad(bi,256,256,Color.white));
             String icnProductBase64 = new String(convertImageIconToBase64(icnProduct));
 
